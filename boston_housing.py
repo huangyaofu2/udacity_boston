@@ -24,7 +24,7 @@
 # 
 # 运行下面区域的代码以载入波士顿房屋数据集，以及一些此项目所需的Python库。如果成功返回数据集的大小，表示数据集已载入成功。
 
-# In[1]:
+# In[23]:
 
 
 # 载入此项目所需要的库
@@ -41,7 +41,7 @@ if version_info.major != 2 and version_info.minor != 7:
 get_ipython().magic(u'matplotlib inline')
 
 
-# In[2]:
+# In[24]:
 
 
 # 载入波士顿房屋的数据集
@@ -69,25 +69,25 @@ print "Boston housing dataset has {} data points with {} variables each.".format
 # - 计算`prices`中的`'MEDV'`的最小值、最大值、均值、中值和标准差；
 # - 将运算结果储存在相应的变量中。
 
-# In[3]:
+# In[25]:
 
 
 #TODO 1
 
 #目标：计算价值的最小值
-minimum_price = data['MEDV'].min()
+minimum_price = np.min(data['MEDV'])
 
 #目标：计算价值的最大值
-maximum_price = data['MEDV'].max()
+maximum_price = np.max(data['MEDV'])
 
 #目标：计算价值的平均值
-mean_price = data['MEDV'].mean()
+mean_price = np.mean(data['MEDV'])
 
 #目标：计算价值的中值
-median_price = data['MEDV'].median()
+median_price = np.median(data['MEDV'])
 
 #目标：计算价值的标准差
-std_price = data['MEDV'].std()
+std_price = np.std(data['MEDV'])
 
 #目标：输出计算的结果
 print "Statistics for Boston housing dataset:\n"
@@ -111,7 +111,9 @@ print "Standard deviation of prices: ${:,.2f}".format(std_price)
 
 # ### 问题 1 - 回答：
 # 
-# `'RM'`值为7的价格更高
+#  - `'RM'`值越大，`'MEDV'`也越大，因为更多的房间意味着占地越大，价格也会越高
+#  - `'LSTAT'`值越大，`'MEDV'`应该是越低，因为`'LSTAT'`越大，富有阶层越少，买的房子价格会偏低
+#  - `'PTRATIO'`值越大，`'MEDV'`应该越低，因为教育投入与社会发达程度挂钩，配置的老师越少，意味着`'PTRATIO'`越高，能负担起高房价的人会越少。
 
 # ### 编程练习 2: 数据分割与重排
 # 接下来，你需要把波士顿房屋数据集分成训练和测试两个子集。通常在这个过程中，数据也会被重排列，以消除数据集中由于顺序而产生的偏差。
@@ -121,14 +123,14 @@ print "Standard deviation of prices: ${:,.2f}".format(std_price)
 #   - 分割比例为：80%的数据用于训练，20%用于测试；
 #   - 选定一个数值以设定 `train_test_split` 中的 `random_state` ，这会确保结果的一致性；
 
-# In[4]:
+# In[26]:
 
 
 # TODO 2
 
 # 提示： 导入train_test_split
 from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(data[data.columns[0:3]],data[data.columns[3]],test_size=0.2,random_state=33)
+X_train, X_test, y_train, y_test = train_test_split(features,prices,test_size=0.2,random_state=33)
 
 
 # ### 问题 2 - 训练及测试
@@ -162,7 +164,7 @@ X_train, X_test, y_train, y_test = train_test_split(data[data.columns[0:3]],data
 # 
 # - (可选) 不使用任何外部库，参考[决定系数的定义](https://en.wikipedia.org/wiki/Coefficient_of_determination)进行计算，这也可以帮助你更好的理解决定系数在什么情况下等于0或等于1。
 
-# In[5]:
+# In[27]:
 
 
 # TODO 3
@@ -181,7 +183,7 @@ y_pred = [2.5, 0.0, 2, 8]
 performance_metric(y_true, y_pred) 
 
 
-# In[6]:
+# In[28]:
 
 
 # TODO 3 可选
@@ -217,7 +219,7 @@ performance_metric2(y_true, y_pred)
 # 
 # **提示**：运行下方的代码，使用`performance_metric`函数来计算模型的决定系数。
 
-# In[7]:
+# In[29]:
 
 
 # 计算这个模型的预测结果的决定系数
@@ -238,7 +240,7 @@ print "Model has a coefficient of determination, R^2, of {:.3f}.".format(score)
 # 
 # 运行下方区域中的代码，并利用输出的图形回答下面的问题。
 
-# In[8]:
+# In[30]:
 
 
 # 根据不同的训练集大小，和最大深度，生成学习曲线
@@ -261,7 +263,7 @@ vs.ModelLearning(X_train, y_train)
 # 
 # 运行下方区域中的代码，并利用输出的图形并回答下面的两个问题。
 
-# In[9]:
+# In[31]:
 
 
 # 根据不同的最大深度参数，生成复杂度曲线
@@ -307,7 +309,7 @@ vs.ModelComplexity(X_train, y_train)
 # **提示：** 在下面 fit_model函数最后加入 `print pd.DataFrame(grid.cv_results_)` 可以帮你查看更多信息。
 
 # ### 问题 8 - 回答：
-#  - K折交叉验证法是将数据分成K份，拿出一份来作为验证数据集，剩下的K-1份作为训练数据集，如此循环K次，得出K份分数，以这K份测试结果的平均值作为总体的测试结果。
+#  - K折交叉验证法是将整个数据集分成K份，拿出一份来作为验证数据集，剩下的K-1份作为训练数据集，如此循环K次，得出K份分数，以这K份测试结果的平均值作为总体的测试结果。
 #  - GridSearchCV是通过交叉验证的结果作为每次的评分。
 #  - 返回各个参数组合下的交叉验证结果评分。
 #  - 如果不采用交叉验证，需要用别的方式去衡量模型的好坏。交叉验证通过分割出训练集和验证及来得出模型是否能更好地适应新数据。
@@ -325,7 +327,7 @@ vs.ModelComplexity(X_train, y_train)
 #   
 # 如果你对python函数的默认参数定义和传递不熟悉，可以参考这个MIT课程的[视频](http://cn-static.udacity.com/mlnd/videos/MIT600XXT114-V004200_DTH.mp4)。
 
-# In[10]:
+# In[35]:
 
 
 # TODO 4
@@ -338,7 +340,7 @@ from sklearn.model_selection import GridSearchCV
 def fit_model(X, y):
     """ 基于输入数据 [X,y]，利于网格搜索找到最优的决策树模型"""
     
-    cross_validator = KFold(n_splits=10)
+    cross_validator = KFold(n_splits=10,random_state=1, shuffle=True)
     
     regressor = DecisionTreeRegressor()
 
@@ -350,7 +352,7 @@ def fit_model(X, y):
 
     # 基于输入数据 [X,y]，进行网格搜索
     grid = grid.fit(X, y)
-
+    print pd.DataFrame(grid.cv_results_)
     # 返回网格搜索后的最优模型
     return grid.best_estimator_
 
@@ -364,7 +366,7 @@ def fit_model(X, y):
 # - 计算当前模型的交叉验证分数
 # - 返回最优交叉验证分数对应的模型
 
-# In[11]:
+# In[36]:
 
 
 # TODO 4 可选
@@ -394,7 +396,7 @@ def fit_model2(X, y):
 # 
 # 运行下方区域内的代码，将决策树回归函数代入训练数据的集合，以得到最优化的模型。
 
-# In[12]:
+# In[37]:
 
 
 # 基于训练数据，获得最优模型
@@ -425,7 +427,7 @@ print "Parameter 'max_depth' is {} for the optimal model.".format(optimal_reg.ge
 # 
 # 运行下列的代码区域，使用你优化的模型来为每位客户的房屋价值做出预测。
 
-# In[13]:
+# In[38]:
 
 
 # 生成三个客户的数据
@@ -440,12 +442,13 @@ for i, price in enumerate(predicted_price):
 
 
 # ### 问题 10 - 回答：
-# 可从上面预测值看到，价格是域贫困指数成负相关，社区越富有，建议的价格也越高，这是合理的
+# 从**编程练习 1：基础统计运算**统计分析出，均值为454,342.94，最小值为105,000.00，最大值为1,024,800.00  
+# 从上面预测值看到，三个客户的均值为525,712.07 ,与整体均值相差不大，而三个价格都在整体统计的最小值与最大值之间，预测算是合理
 
 # ### 编程练习 5
 # 你刚刚预测了三个客户的房子的售价。在这个练习中，你将用你的最优模型在整个测试数据上进行预测, 并计算相对于目标变量的决定系数 R<sup>2</sup>的值**。
 
-# In[20]:
+# In[40]:
 
 
 #TODO 5
@@ -476,7 +479,7 @@ print "Optimal model has R^2 score {:,.2f} on test data".format(r2)
 # 
 # **提示**: 执行下方区域中的代码，采用不同的训练和测试集执行 `fit_model` 函数10次。注意观察对一个特定的客户来说，预测是如何随训练数据的变化而变化的。
 
-# In[21]:
+# In[41]:
 
 
 # 请先注释掉 fit_model 函数里的所有 print 语句
@@ -520,7 +523,7 @@ vs.PredictTrials(features, prices, fit_model, client_data)
 # 
 # 你可以参考上面学到的内容，拿这个数据集来练习数据分割与重排、定义衡量标准、训练模型、评价模型表现、使用网格搜索配合交叉验证对参数进行调优并选出最佳参数，比较两者的差别，最终得出最佳模型对验证集的预测分数。
 
-# In[ ]:
+# In[42]:
 
 
 # TODO 6
